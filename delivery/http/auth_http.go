@@ -12,8 +12,8 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-// signInHandler :nodoc:
-func (h *HTTPService) signInHandler(c echo.Context) error {
+// loginHandler :nodoc:
+func (h *HTTPService) loginHandler(c echo.Context) error {
 	var req model.AuthRequest
 
 	if err := c.Bind(&req); err != nil {

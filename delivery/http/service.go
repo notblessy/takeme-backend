@@ -22,6 +22,6 @@ func (h *HTTPService) RegisterUserUsecase(u model.UserUsecase) {
 
 // Routes :nodoc:
 func (h *HTTPService) Routes(route *echo.Echo) {
-	route.POST("/sign-in", h.signInHandler)
+	route.POST("/login", h.loginHandler)
 	route.POST("/register", h.registerUserHandler)
 }

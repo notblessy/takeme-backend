@@ -1,20 +1,19 @@
 -- migrate:up
   CREATE TABLE IF NOT EXISTS users (
     id VARCHAR(128) NOT NULL,
-    organization_id VARCHAR(128) NOT NULL,
-    name VARCHAR(255),
-    role VARCHAR(64),
     email VARCHAR(255),
     password VARCHAR(255),
-    address TEXT,
-    photo TEXT,
+    name VARCHAR(255),
+    description TEXT,
+    gender INT,
+    age INT,
+    is_premium TEXT,
 
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
     deleted_at TIMESTAMP NULL,
     
-    CONSTRAINT users_id_pkey PRIMARY KEY (id),
-    FOREIGN KEY (organization_id) REFERENCES organizations(id)
+    CONSTRAINT users_id_pkey PRIMARY KEY (id)
   );
 
 -- migrate:down
