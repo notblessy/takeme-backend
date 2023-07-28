@@ -1,7 +1,7 @@
 .PHONY: run migration
 
-run:
-	go run main.go httpsrv
+run: check-modd-exists
+	@modd -f ./.modd/httpsrv.modd.conf
 
 migrate_up=go run main.go migrate --direction=up
 migrate_down=go run main.go migrate --direction=down
@@ -16,3 +16,6 @@ migration:
 	else\
 		go run main.go migrate --direction=$(direction);\
 	fi
+
+check-modd-exists:
+	@modd --version > /dev/null
