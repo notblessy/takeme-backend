@@ -1,6 +1,7 @@
 package console
 
 import (
+	"fmt"
 	"net/url"
 
 	"github.com/amacneil/dbmate/v2/pkg/dbmate"
@@ -24,6 +25,7 @@ func init() {
 }
 
 func migrate(cmd *cobra.Command, args []string) {
+	fmt.Println("MASUK NIH LOHH")
 	direction := cmd.Flag("direction").Value.String()
 	newFile := cmd.Flag("new").Value.String()
 

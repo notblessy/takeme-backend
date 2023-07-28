@@ -1,3 +1,5 @@
+.PHONY: run migration
+
 run:
 	go run main.go httpsrv
 
