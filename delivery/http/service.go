@@ -1,13 +1,17 @@
 package http
 
 import (
+	echojwt "github.com/labstack/echo-jwt"
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	"github.com/notblessy/takeme-backend/model"
+	"github.com/notblessy/takeme-backend/utils"
 )
 
 // HTTPService :nodoc:
 type HTTPService struct {
-	userUsecase model.UserUsecase
+	userUsecase     model.UserUsecase
+	reactionUsecase model.ReactionUsecase
 }
 
 // NewHTTPService :nodoc:
@@ -20,8 +24,27 @@ func (h *HTTPService) RegisterUserUsecase(u model.UserUsecase) {
 	h.userUsecase = u
 }
 
+// RegisterReactionUsecase :nodoc:
+func (h *HTTPService) RegisterReactionUsecase(r model.ReactionUsecase) {
+	h.reactionUsecase = r
+}
+
 // Routes :nodoc:
 func (h *HTTPService) Routes(route *echo.Echo) {
-	route.POST("/login", h.loginHandler)
-	route.POST("/register", h.registerUserHandler)
+	v1 := route.Group("/v1")
+
+	auth := v1.Group("auth")
+	auth.POST("/login", h.loginHandler)
+	auth.POST("/register", h.registerUserHandler)
+
+	// Protected routes
+	routes := v1.Group("")
+	routes.Use(middleware.Logger())
+	routes.Use(middleware.Recover())
+	routes.Use(middleware.CORS())
+	routes.Use(echojwt.WithConfig(utils.JwtConfig()))
+
+	reaction := routes.Group("/reaction")
+	reaction.POST("/", h.createReactionHandler)
+
 }

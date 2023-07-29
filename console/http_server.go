@@ -38,10 +38,15 @@ func runHTTP(cmd *cobra.Command, args []string) {
 	e.Validator = &utils.CustomValidator{Validator: validator.New()}
 
 	userRepo := repository.NewUserRepository(mysql)
+	notifRepo := repository.NewNotificationRepository(mysql)
+	reactionRepo := repository.NewReactionRepository(mysql)
+
 	userUsecase := usecase.NewUserUsecase(userRepo)
+	reactionUsecase := usecase.NewReactionUsecase(reactionRepo, notifRepo)
 
 	httpSvc := http.NewHTTPService()
 	httpSvc.RegisterUserUsecase(userUsecase)
+	httpSvc.RegisterReactionUsecase(reactionUsecase)
 
 	httpSvc.Routes(e)
 

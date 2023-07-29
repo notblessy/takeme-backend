@@ -4,9 +4,15 @@ import (
 	"time"
 )
 
+const (
+	ReactionTypeLike string = "LIKE"
+	ReactionTypePass string = "PASS"
+)
+
 // ReactionRepository :nodoc:
 type ReactionRepository interface {
 	Create(reaction *Reaction) error
+	FindMatch(userBy, userTo string) (Reaction, error)
 }
 
 // ReactionUsecase :nodoc:
@@ -20,6 +26,7 @@ type Reaction struct {
 	UserBy    string     `json:"user_by"`
 	UserTo    string     `json:"user_to"`
 	Type      string     `json:"email"`
+	MatchedAt *time.Time `json:"matched_at"`
 	CreatedAt time.Time  `gorm:"<-:create" json:"created_at"`
 	UpdatedAt *time.Time `json:"updated_at"`
 	DeletedAt *time.Time `json:"deleted_at,omitempty"`
@@ -40,4 +47,8 @@ func NewReaction(request ReactionRequest) Reaction {
 		UserTo: request.UserTo,
 		Type:   request.Type,
 	}
+}
+
+func (r *Reaction) IsMatchWith(userBy, userTo string) bool {
+	return r.UserBy == userTo && r.UserTo == userBy
 }

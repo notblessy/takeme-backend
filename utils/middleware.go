@@ -17,8 +17,8 @@ type JWTClaims struct {
 	ID string
 }
 
-// JWTConfig returns claims config
-func JWTConfig() echojwt.Config {
+// JwtConfig returns claims config
+func JwtConfig() echojwt.Config {
 	c := echojwt.Config{
 		NewClaimsFunc: func(c echo.Context) jwt.Claims {
 			return new(JWTClaims)

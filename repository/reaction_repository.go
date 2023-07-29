@@ -32,3 +32,21 @@ func (u *reactionRepository) Create(reaction *model.Reaction) error {
 
 	return err
 }
+
+// FindMatch :nodoc:
+func (u *reactionRepository) FindMatch(userBy, userTo string) (model.Reaction, error) {
+	logger := logrus.WithFields(logrus.Fields{
+		"user_by": userBy,
+		"user_to": userTo,
+	})
+
+	var result model.Reaction
+
+	err := u.db.Where("user_by = ?", userBy).Where("user_to = ?", userTo).Find(&result).Error
+	if err != nil && err != gorm.ErrRecordNotFound {
+		logger.Error(err)
+		return model.Reaction{}, err
+	}
+
+	return result, nil
+}
