@@ -11,7 +11,8 @@ const (
 
 // ReactionRepository :nodoc:
 type ReactionRepository interface {
-	Create(reaction *Reaction) error
+	Create(reaction Reaction) error
+	CreateMatched(reaction Reaction, matched Reaction) error
 	FindMatch(userBy, userTo string) (Reaction, error)
 }
 
@@ -49,6 +50,6 @@ func NewReaction(request ReactionRequest) Reaction {
 	}
 }
 
-func (r *Reaction) IsMatchWith(userBy, userTo string) bool {
-	return r.UserBy == userTo && r.UserTo == userBy
+func (r *Reaction) IsMatch() bool {
+	return r.ID != ""
 }

@@ -19,12 +19,12 @@ func NewReactionRepository(d *gorm.DB) model.ReactionRepository {
 }
 
 // Create :nodoc:
-func (u *reactionRepository) Create(reaction *model.Reaction) error {
+func (r *reactionRepository) Create(reaction model.Reaction) error {
 	logger := logrus.WithFields(logrus.Fields{
 		"reaction": utils.Dump(reaction),
 	})
 
-	err := u.db.Create(reaction).Error
+	err := r.db.Create(&reaction).Error
 	if err != nil {
 		logger.Error(err)
 		return err
@@ -34,7 +34,7 @@ func (u *reactionRepository) Create(reaction *model.Reaction) error {
 }
 
 // FindMatch :nodoc:
-func (u *reactionRepository) FindMatch(userBy, userTo string) (model.Reaction, error) {
+func (r *reactionRepository) FindMatch(userBy, userTo string) (model.Reaction, error) {
 	logger := logrus.WithFields(logrus.Fields{
 		"user_by": userBy,
 		"user_to": userTo,
@@ -42,11 +42,43 @@ func (u *reactionRepository) FindMatch(userBy, userTo string) (model.Reaction, e
 
 	var result model.Reaction
 
-	err := u.db.Where("user_by = ?", userBy).Where("user_to = ?", userTo).Find(&result).Error
+	qb := r.db.
+		Where("user_by = ?", userBy).
+		Where("user_to = ?", userTo).
+		Where("type = ?", model.ReactionTypeLike)
+
+	err := qb.Find(&result).Error
 	if err != nil && err != gorm.ErrRecordNotFound {
 		logger.Error(err)
 		return model.Reaction{}, err
 	}
 
 	return result, nil
+}
+
+// CreateMatched :nodoc:
+func (r *reactionRepository) CreateMatched(reaction model.Reaction, matched model.Reaction) error {
+	logger := logrus.WithFields(logrus.Fields{
+		"reaction": utils.Dump(reaction),
+		"matched":  utils.Dump(matched),
+	})
+
+	tx := r.db.Begin()
+
+	err := tx.Create(&reaction).Error
+	if err != nil {
+		tx.Rollback()
+		logger.Error(err)
+		return err
+	}
+
+	err = tx.Save(&matched).Error
+	if err != nil {
+		tx.Rollback()
+		logger.Error(err)
+		return err
+	}
+
+	tx.Commit()
+	return err
 }

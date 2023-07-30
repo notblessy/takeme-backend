@@ -18,8 +18,8 @@ func NewNotificationRepository(d *gorm.DB) model.NotificationRepository {
 	}
 }
 
-// CreateInBatch :nodoc:
-func (u *notificationRepository) CreateInBatch(notification []model.Notification) error {
+// Create :nodoc:
+func (u *notificationRepository) Create(notification model.Notification) error {
 	err := u.db.Create(notification).Error
 	if err != nil {
 		logrus.WithFields(logrus.Fields{

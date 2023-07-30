@@ -1,9 +1,8 @@
 -- migrate:up
   CREATE TABLE IF NOT EXISTS notifications (
     id VARCHAR(128) NOT NULL,
-    user_by VARCHAR(128),
-    user_to VARCHAR(128),
-    message TEXT,
+    user_id VARCHAR(128),
+    message JSON,
     is_read boolean,
 
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),

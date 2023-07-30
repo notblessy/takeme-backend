@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"encoding/json"
 	"time"
 
 	"github.com/notblessy/takeme-backend/model"
@@ -34,7 +35,7 @@ func (u *reactionUsecase) Create(req model.ReactionRequest) (model.Reaction, err
 
 	// create only if swiped left
 	if reaction.Type == model.ReactionTypePass {
-		err := u.reactionRepo.Create(&reaction)
+		err := u.reactionRepo.Create(reaction)
 		if err != nil {
 			logger.Error(err.Error())
 			return model.Reaction{}, err
@@ -51,8 +52,8 @@ func (u *reactionUsecase) Create(req model.ReactionRequest) (model.Reaction, err
 	}
 
 	// if not matched
-	if !reaction.IsMatchWith(match.UserBy, match.UserTo) {
-		err := u.reactionRepo.Create(&reaction)
+	if !match.IsMatch() {
+		err := u.reactionRepo.Create(reaction)
 		if err != nil {
 			logger.Error(err.Error())
 			return model.Reaction{}, err
@@ -65,20 +66,32 @@ func (u *reactionUsecase) Create(req model.ReactionRequest) (model.Reaction, err
 	reaction.MatchedAt = &now
 	match.MatchedAt = &now
 
-	err = u.reactionRepo.Create(&reaction)
+	err = u.reactionRepo.CreateMatched(reaction, match)
 	if err != nil {
 		logger.Error(err.Error())
 		return model.Reaction{}, err
 	}
 
-	go u.sendMatchNotification(reaction)
+	go u.sendMatchNotification(match)
 
 	return reaction, nil
 }
 
 func (u *reactionUsecase) sendMatchNotification(reaction model.Reaction) {
-	notif := model.NewMatchNotification(reaction, "Congratulations! You matched")
-	err := u.notificationRepo.CreateInBatch(notif)
+	content := model.MatchMessage{
+		Type:    model.ReactionTypeLike,
+		UserID:  reaction.UserTo,
+		Message: "Congratulations! You matched",
+	}
+
+	b, err := json.Marshal(content)
+	if err != nil {
+		logrus.WithField("reaction", reaction).Error(err.Error())
+	}
+
+	notif := model.NewMatchNotification(reaction.UserBy, string(b))
+
+	err = u.notificationRepo.Create(notif)
 	if err != nil {
 		logrus.WithField("reaction", reaction).Error(err.Error())
 	}
