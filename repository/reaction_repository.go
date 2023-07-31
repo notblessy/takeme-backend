@@ -1,6 +1,11 @@
 package repository
 
 import (
+	"encoding/json"
+	"fmt"
+	"time"
+
+	"github.com/notblessy/takeme-backend/cacher"
 	"github.com/notblessy/takeme-backend/model"
 	"github.com/notblessy/takeme-backend/utils"
 	"github.com/sirupsen/logrus"
@@ -8,13 +13,15 @@ import (
 )
 
 type reactionRepository struct {
-	db *gorm.DB
+	db    *gorm.DB
+	cache cacher.Cacher
 }
 
 // NewReactionRepository :nodoc:
-func NewReactionRepository(d *gorm.DB) model.ReactionRepository {
+func NewReactionRepository(d *gorm.DB, c cacher.Cacher) model.ReactionRepository {
 	return &reactionRepository{
-		db: d,
+		db:    d,
+		cache: c,
 	}
 }
 
@@ -30,6 +37,14 @@ func (r *reactionRepository) Create(reaction model.Reaction) error {
 		return err
 	}
 
+	cacheKey := r.newReactionCacheKey(reaction.UserBy, reaction.UserTo)
+
+	cacheItem := cacher.NewItemWithTTL(cacheKey, reaction, 24*time.Hour)
+	err = r.cache.Store(cacheItem)
+	if err != nil {
+		logger.Error(err)
+	}
+
 	return err
 }
 
@@ -42,15 +57,34 @@ func (r *reactionRepository) FindMatch(userBy, userTo string) (model.Reaction, e
 
 	var result model.Reaction
 
+	// find match from cache
+	cacheKey := r.newReactionCacheKey(userTo, userBy)
+	err := r.findMatchFromCache(cacheKey, &result)
+	if err != nil {
+		logger.Error(err)
+		return model.Reaction{}, err
+	}
+
+	if result.ID != "" {
+		return result, nil
+	}
+
+	// find match from db if no cache
 	qb := r.db.
 		Where("user_by = ?", userBy).
 		Where("user_to = ?", userTo).
 		Where("type = ?", model.ReactionTypeLike)
 
-	err := qb.Find(&result).Error
+	err = qb.Find(&result).Error
 	if err != nil && err != gorm.ErrRecordNotFound {
 		logger.Error(err)
 		return model.Reaction{}, err
+	}
+
+	cacheItem := cacher.NewItemWithTTL(cacheKey, result, 24*time.Hour)
+	err = r.cache.Store(cacheItem)
+	if err != nil {
+		logger.Error(err)
 	}
 
 	return result, nil
@@ -81,4 +115,27 @@ func (r *reactionRepository) CreateMatched(reaction model.Reaction, matched mode
 
 	tx.Commit()
 	return err
+}
+
+func (r *reactionRepository) findMatchFromCache(cacheKey string, reaction *model.Reaction) error {
+	res, err := r.cache.Get(cacheKey)
+	if err != nil {
+		return err
+	}
+
+	switch res {
+	case nil:
+		return nil
+	default:
+		err := json.Unmarshal(res.([]byte), reaction)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (r *reactionRepository) newReactionCacheKey(userBy, userTo string) string {
+	return fmt.Sprintf("match:%s:%s", userBy, userTo)
 }

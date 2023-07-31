@@ -4,6 +4,7 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"github.com/notblessy/takeme-backend/cacher"
 	"github.com/notblessy/takeme-backend/config"
 	"github.com/notblessy/takeme-backend/db"
 	"github.com/notblessy/takeme-backend/delivery/http"
@@ -30,6 +31,11 @@ func runHTTP(cmd *cobra.Command, args []string) {
 	mysql := db.MysqlConnection()
 	defer db.CloseMysql(mysql)
 
+	redis := db.RedisConnectionPool()
+
+	cache := cacher.NewCacher()
+	cache.SetRedisConnectionPool(redis)
+
 	e := echo.New()
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins: []string{"*"},
@@ -39,7 +45,7 @@ func runHTTP(cmd *cobra.Command, args []string) {
 
 	userRepo := repository.NewUserRepository(mysql)
 	notifRepo := repository.NewNotificationRepository(mysql)
-	reactionRepo := repository.NewReactionRepository(mysql)
+	reactionRepo := repository.NewReactionRepository(mysql, cache)
 
 	userUsecase := usecase.NewUserUsecase(userRepo)
 	reactionUsecase := usecase.NewReactionUsecase(reactionRepo, notifRepo)

@@ -79,3 +79,11 @@ func LogLevel() string {
 func JwtSecret() string {
 	return viper.GetString("jwt_secret")
 }
+
+func RedisHost() string {
+	return viper.GetString("redis_host")
+}
+
+func RedisDB() int {
+	return viper.GetInt("redis_db")
+}
