@@ -48,7 +48,7 @@ func (h *HTTPService) loginHandler(c echo.Context) error {
 			})
 		case model.ErrIncorrectEmailOrPassword:
 			return utils.Response(c, http.StatusBadRequest, &utils.HTTPResponse{
-				Message: model.ErrBadRequest.Error(),
+				Message: model.ErrIncorrectEmailOrPassword.Error(),
 			})
 		default:
 			return utils.Response(c, http.StatusInternalServerError, &utils.HTTPResponse{
@@ -66,7 +66,7 @@ func (h *HTTPService) loginHandler(c echo.Context) error {
 
 	return utils.Response(c, http.StatusOK, &utils.HTTPResponse{
 		Data: model.Auth{
-			ID:    user.ID,
+			ID:    userID,
 			Token: token,
 		},
 	})

@@ -34,7 +34,6 @@ type User struct {
 	Preference  int        `json:"preference"`
 	Age         int        `json:"age"`
 	IsPremium   bool       `json:"is_premium"`
-	Photos      []string   `json:"photos,omitempty"`
 	CreatedAt   time.Time  `gorm:"<-:create" json:"created_at"`
 	UpdatedAt   *time.Time `json:"updated_at"`
 	DeletedAt   *time.Time `json:"deleted_at,omitempty"`
@@ -71,13 +70,12 @@ func (u *User) NewUserFromRequest(req RegisterUser) {
 	u.Gender = SupportedGender[req.Gender]
 	u.Preference = SupportedGender[req.Preference]
 	u.Age = req.Age
-	u.Photos = req.Photos
 }
 
 func (u *User) IsPasswordCorrect(req User) bool {
-	if u.Email == req.Email && u.Password != req.Password {
-		return false
+	if u.Email == req.Email && u.Password == req.Password {
+		return true
 	}
 
-	return true
+	return false
 }

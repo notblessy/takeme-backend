@@ -50,9 +50,9 @@ func (u *userUsecase) Login(user model.User) (string, error) {
 	}
 
 	if !resp.IsPasswordCorrect(user) {
-		logger.Error(err)
-		return "", err
+		logger.Error(model.ErrIncorrectEmailOrPassword.Error())
+		return "", model.ErrIncorrectEmailOrPassword
 	}
 
-	return user.ID, nil
+	return resp.ID, nil
 }
