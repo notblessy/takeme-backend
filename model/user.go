@@ -37,6 +37,7 @@ type User struct {
 	Preference  int        `json:"preference"`
 	Age         int        `json:"age"`
 	IsPremium   bool       `json:"is_premium"`
+	Photos      []Photo    `json:"photos"`
 	CreatedAt   time.Time  `gorm:"<-:create" json:"created_at"`
 	UpdatedAt   *time.Time `json:"updated_at"`
 	DeletedAt   *time.Time `json:"deleted_at,omitempty"`
@@ -74,6 +75,17 @@ func (u *User) NewUserFromRequest(req RegisterUser) {
 	u.Gender = SupportedGender[req.Gender]
 	u.Preference = SupportedGender[req.Preference]
 	u.Age = req.Age
+}
+
+func (u *User) NewUserPhotos(photos []string) {
+	for _, url := range photos {
+		p := Photo{
+			UserID: u.ID,
+			Url:    url,
+		}
+
+		u.Photos = append(u.Photos, p)
+	}
 }
 
 func (u *User) IsPasswordCorrect(req User) bool {

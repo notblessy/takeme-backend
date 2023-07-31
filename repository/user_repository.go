@@ -80,7 +80,7 @@ func (u *userRepository) FindAll(req map[string]string, userIDs []string) (user 
 	offset, size := utils.GetPageAndSize(req)
 	qb.Order("created_at DESC").Offset(offset).Limit(size)
 
-	err = qb.Find(&user).Error
+	err = qb.Preload("Photos").Find(&user).Error
 	if err != nil && err != gorm.ErrRecordNotFound {
 		logger.Error(err.Error())
 		return user, 0, err

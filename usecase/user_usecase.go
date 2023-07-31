@@ -33,6 +33,10 @@ func (u *userUsecase) Register(req model.RegisterUser) (model.User, error) {
 		user.ID = utils.GenerateID()
 	}
 
+	if len(req.Photos) > 0 {
+		user.NewUserPhotos(req.Photos)
+	}
+
 	err := u.userRepo.Create(user)
 	if err != nil {
 		logger.Error(err.Error())

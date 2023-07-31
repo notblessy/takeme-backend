@@ -1,6 +1,6 @@
 -- migrate:up
   CREATE TABLE IF NOT EXISTS photos (
-    id VARCHAR(128) NOT NULL,
+    id BIGINT AUTO_INCREMENT NOT NULL,
     user_id VARCHAR(128),
     url TEXT,
 
