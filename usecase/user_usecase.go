@@ -64,20 +64,20 @@ func (u *userUsecase) Login(user model.User) (string, error) {
 	return resp.ID, nil
 }
 
-func (u *userUsecase) FindAll(request map[string]string, userID string) ([]model.User, int64, error) {
+func (u *userUsecase) FindAll(request map[string]string, userID string) ([]model.UserResponse, int64, error) {
 	logger := logrus.WithField("request", utils.Dump(request))
 
 	var user model.User
 	err := u.userRepo.FindByID(userID, &user)
 	if err != nil {
 		logger.Error(err)
-		return []model.User{}, 0, nil
+		return []model.UserResponse{}, 0, nil
 	}
 
 	swipedIDs, err := u.reactionRepo.FindAllSwiped(user.ID)
 	if err != nil && err != gorm.ErrRecordNotFound {
 		logger.Error(err)
-		return []model.User{}, 0, nil
+		return []model.UserResponse{}, 0, nil
 	}
 
 	swipedIDs = append(swipedIDs, user.ID)
@@ -85,8 +85,14 @@ func (u *userUsecase) FindAll(request map[string]string, userID string) ([]model
 	users, total, err := u.userRepo.FindAll(request, swipedIDs)
 	if err != nil && err != gorm.ErrRecordNotFound {
 		logger.Error(err)
-		return []model.User{}, 0, nil
+		return []model.UserResponse{}, 0, nil
 	}
 
-	return users, total, nil
+	var response []model.UserResponse
+
+	for _, user := range users {
+		response = append(response, user.ToResponse())
+	}
+
+	return response, total, nil
 }
