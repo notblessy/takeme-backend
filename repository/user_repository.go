@@ -62,3 +62,29 @@ func (u *userRepository) FindByID(id string, user *model.User) error {
 
 	return nil
 }
+
+// FindAll :nodoc:
+func (u *userRepository) FindAll(req map[string]string, userIDs []string) (user []model.User, total int64, err error) {
+	logger := logrus.WithFields(logrus.Fields{
+		"request": utils.Dump(req),
+	})
+
+	qb := u.db.Table("users").Not("id IN (?)", userIDs)
+
+	err = qb.Count(&total).Error
+	if err != nil && err != gorm.ErrRecordNotFound {
+		logger.Error(err.Error())
+		return user, 0, err
+	}
+
+	offset, size := utils.GetPageAndSize(req)
+	qb.Order("created_at DESC").Offset(offset).Limit(size)
+
+	err = qb.Find(&user).Error
+	if err != nil && err != gorm.ErrRecordNotFound {
+		logger.Error(err.Error())
+		return user, 0, err
+	}
+
+	return user, total, nil
+}

@@ -1,9 +1,11 @@
 package http
 
 import (
+	echojwt "github.com/labstack/echo-jwt"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/notblessy/takeme-backend/model"
+	"github.com/notblessy/takeme-backend/utils"
 )
 
 // HTTPService :nodoc:
@@ -40,9 +42,12 @@ func (h *HTTPService) Routes(route *echo.Echo) {
 	routes.Use(middleware.Logger())
 	routes.Use(middleware.Recover())
 	routes.Use(middleware.CORS())
-	// routes.Use(echojwt.WithConfig(utils.JwtConfig()))
+	routes.Use(echojwt.WithConfig(utils.JwtConfig()))
 
-	reaction := routes.Group("/reaction")
-	reaction.POST("/", h.createReactionHandler)
+	reactions := routes.Group("/reactions")
+	reactions.POST("", h.createReactionHandler)
+
+	users := routes.Group("/users")
+	users.GET("", h.findAllUserHandler)
 
 }

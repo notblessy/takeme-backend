@@ -15,12 +15,15 @@ type UserRepository interface {
 	Create(User User) error
 	FindByEmail(email string) (User, error)
 	FindByID(id string, user *User) error
+	FindAll(request map[string]string, userIDs []string) ([]User, int64, error)
 }
 
 // UserUsecase :nodoc:
 type UserUsecase interface {
 	Register(User RegisterUser) (User, error)
 	Login(user User) (string, error)
+
+	FindAll(request map[string]string, userID string) ([]User, int64, error)
 }
 
 // User :nodoc:
@@ -65,6 +68,7 @@ type Auth struct {
 
 func (u *User) NewUserFromRequest(req RegisterUser) {
 	u.Name = req.Name
+	u.Description = req.Description
 	u.Email = req.Email
 	u.Password = req.Password
 	u.Gender = SupportedGender[req.Gender]

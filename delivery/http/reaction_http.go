@@ -29,6 +29,16 @@ func (h *HTTPService) createReactionHandler(c echo.Context) error {
 		})
 	}
 
+	jwtClaim, err := utils.GetSessionClaims(c)
+	if err != nil {
+		logger.Error(err)
+		return utils.Response(c, http.StatusUnauthorized, &utils.HTTPResponse{
+			Message: err.Error(),
+		})
+	}
+
+	req.UserBy = jwtClaim.ID
+
 	reaction, err := h.reactionUsecase.Create(req)
 	if err != nil {
 		logger.Error(err)
@@ -38,6 +48,6 @@ func (h *HTTPService) createReactionHandler(c echo.Context) error {
 	}
 
 	return utils.Response(c, http.StatusCreated, &utils.HTTPResponse{
-		Data: reaction,
+		Data: reaction.ID,
 	})
 }

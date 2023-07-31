@@ -47,7 +47,7 @@ func runHTTP(cmd *cobra.Command, args []string) {
 	notifRepo := repository.NewNotificationRepository(mysql)
 	reactionRepo := repository.NewReactionRepository(mysql, cache)
 
-	userUsecase := usecase.NewUserUsecase(userRepo)
+	userUsecase := usecase.NewUserUsecase(userRepo, reactionRepo)
 	reactionUsecase := usecase.NewReactionUsecase(reactionRepo, notifRepo)
 
 	httpSvc := http.NewHTTPService()

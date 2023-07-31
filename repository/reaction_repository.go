@@ -117,6 +117,23 @@ func (r *reactionRepository) CreateMatched(reaction model.Reaction, matched mode
 	return err
 }
 
+// FindAllSwiped :nodoc:
+func (r *reactionRepository) FindAllSwiped(userBy string) ([]string, error) {
+	logger := logrus.WithFields(logrus.Fields{
+		"user_by": userBy,
+	})
+
+	var res []string
+
+	err := r.db.Table("reactions").Select("user_to").Where("user_by = ?", userBy).Scan(&res).Error
+	if err != nil {
+		logger.Error(err)
+		return []string{}, err
+	}
+
+	return res, nil
+}
+
 func (r *reactionRepository) findMatchFromCache(cacheKey string, reaction *model.Reaction) error {
 	res, err := r.cache.Get(cacheKey)
 	if err != nil {
