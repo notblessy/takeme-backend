@@ -24,7 +24,7 @@ func (u *userRepository) Create(user model.User) error {
 		"user": utils.Dump(user),
 	})
 
-	err := u.db.Create(&user).Error
+	err := u.db.Table("users").Create(&user).Error
 	if err != nil {
 		logger.Error(err)
 		return err
@@ -55,22 +55,6 @@ func (u *userRepository) FindByID(id string, user *model.User) error {
 	})
 
 	err := u.db.Where("id = ?", id).First(user).Error
-	if err != nil {
-		logger.Error(err)
-		return err
-	}
-
-	return nil
-}
-
-// FindAllUsersByRole :nodoc:
-func (u *userRepository) FindAllUsersByRole(organizationID, role string, user *[]model.User) error {
-	logger := logrus.WithFields(logrus.Fields{
-		"organization_id": organizationID,
-		"role":            role,
-	})
-
-	err := u.db.Where("role = ? AND organization_id = ?", role, organizationID).Find(user).Error
 	if err != nil {
 		logger.Error(err)
 		return err

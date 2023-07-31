@@ -75,7 +75,7 @@ func (h *HTTPService) loginHandler(c echo.Context) error {
 // registerUserHandler :nodoc:
 func (h *HTTPService) registerUserHandler(c echo.Context) error {
 	logger := logrus.WithField("context", utils.Dump(c))
-	var req model.User
+	var req model.RegisterUser
 
 	if err := c.Bind(&req); err != nil {
 		logger.Error(err)
@@ -99,7 +99,17 @@ func (h *HTTPService) registerUserHandler(c echo.Context) error {
 		})
 	}
 
-	return utils.Response(c, http.StatusCreated, &utils.HTTPResponse{
-		Data: user,
+	token, err := utils.GenerateJwtToken(user.ID)
+	if err != nil {
+		return utils.Response(c, http.StatusUnauthorized, &utils.HTTPResponse{
+			Message: fmt.Sprintf("token error: %s", model.ErrUnauthorized.Error()),
+		})
+	}
+
+	return utils.Response(c, http.StatusOK, &utils.HTTPResponse{
+		Data: model.Auth{
+			ID:    user.ID,
+			Token: token,
+		},
 	})
 }

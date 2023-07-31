@@ -10,6 +10,26 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
+-- Table structure for table `notifications`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `notifications` (
+  `id` varchar(128) NOT NULL,
+  `user_id` varchar(128) DEFAULT NULL,
+  `message` json DEFAULT NULL,
+  `is_read` tinyint(1) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `deleted_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `user_id` (`user_id`),
+  CONSTRAINT `notifications_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `photos`
 --
 
@@ -39,6 +59,7 @@ CREATE TABLE `reactions` (
   `user_by` varchar(128) DEFAULT NULL,
   `user_to` varchar(128) DEFAULT NULL,
   `type` varchar(35) DEFAULT NULL,
+  `matched_at` timestamp NULL DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `deleted_at` timestamp NULL DEFAULT NULL,
@@ -70,11 +91,12 @@ CREATE TABLE `schema_migrations` (
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `users` (
   `id` varchar(128) NOT NULL,
+  `name` varchar(255) DEFAULT NULL,
   `email` varchar(255) DEFAULT NULL,
   `password` varchar(255) DEFAULT NULL,
-  `name` varchar(255) DEFAULT NULL,
   `description` text,
   `gender` int DEFAULT NULL,
+  `preference` int DEFAULT NULL,
   `age` int DEFAULT NULL,
   `is_premium` text,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -107,5 +129,6 @@ LOCK TABLES `schema_migrations` WRITE;
 INSERT INTO `schema_migrations` (version) VALUES
   ('20230728100310'),
   ('20230728150612'),
-  ('20230728150936');
+  ('20230728150936'),
+  ('20230729010454');
 UNLOCK TABLES;

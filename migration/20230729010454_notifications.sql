@@ -10,8 +10,7 @@
     deleted_at TIMESTAMP NULL,
     
     CONSTRAINT notifications_id_pkey PRIMARY KEY (id),
-    FOREIGN KEY (user_by) REFERENCES users(id),
-    FOREIGN KEY (user_to) REFERENCES users(id)
+    FOREIGN KEY (user_id) REFERENCES users(id)
   );
 
 -- migrate:down

@@ -1,11 +1,12 @@
 -- migrate:up
   CREATE TABLE IF NOT EXISTS users (
     id VARCHAR(128) NOT NULL,
+    name VARCHAR(255),
     email VARCHAR(255),
     password VARCHAR(255),
-    name VARCHAR(255),
     description TEXT,
     gender INT,
+    preference INT,
     age INT,
     is_premium TEXT,
 

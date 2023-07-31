@@ -4,32 +4,52 @@ import (
 	"time"
 )
 
+var SupportedGender = map[string]int{
+	"MALE":   1,
+	"FEMALE": 2,
+	"BOTH":   3,
+}
+
 // UserRepository :nodoc:
 type UserRepository interface {
 	Create(User User) error
 	FindByEmail(email string) (User, error)
 	FindByID(id string, user *User) error
-	FindAllUsersByRole(organizationID, role string, user *[]User) error
 }
 
 // UserUsecase :nodoc:
 type UserUsecase interface {
-	Register(User User) (User, error)
+	Register(User RegisterUser) (User, error)
 	Login(user User) (string, error)
 }
 
 // User :nodoc:
 type User struct {
-	ID        string     `json:"id"`
-	Name      string     `json:"name"`
-	Phone     string     `json:"phone"`
-	Email     string     `json:"email" validate:"required"`
-	Password  string     `json:"password,omitempty"`
-	Address   string     `json:"address"`
-	Photo     string     `json:"photo"`
-	CreatedAt time.Time  `gorm:"<-:create" json:"created_at"`
-	UpdatedAt *time.Time `json:"updated_at"`
-	DeletedAt *time.Time `json:"deleted_at,omitempty"`
+	ID          string     `json:"id"`
+	Name        string     `json:"name"`
+	Email       string     `json:"email" validate:"required"`
+	Password    string     `json:"password,omitempty"`
+	Description string     `json:"description"`
+	Gender      int        `json:"gender"`
+	Preference  int        `json:"preference"`
+	Age         int        `json:"age"`
+	IsPremium   bool       `json:"is_premium"`
+	Photos      []string   `json:"photos,omitempty"`
+	CreatedAt   time.Time  `gorm:"<-:create" json:"created_at"`
+	UpdatedAt   *time.Time `json:"updated_at"`
+	DeletedAt   *time.Time `json:"deleted_at,omitempty"`
+}
+
+type RegisterUser struct {
+	ID          string   `json:"id"`
+	Name        string   `json:"name"`
+	Email       string   `json:"email" validate:"required"`
+	Password    string   `json:"password,omitempty"`
+	Description string   `json:"description"`
+	Gender      string   `json:"gender"`
+	Preference  string   `json:"preference"`
+	Age         int      `json:"age"`
+	Photos      []string `json:"photos,omitempty"`
 }
 
 // AuthRequest :nodoc:
@@ -42,6 +62,16 @@ type AuthRequest struct {
 type Auth struct {
 	ID    string `json:"id"`
 	Token string `json:"token"`
+}
+
+func (u *User) NewUserFromRequest(req RegisterUser) {
+	u.Name = req.Name
+	u.Email = req.Email
+	u.Password = req.Password
+	u.Gender = SupportedGender[req.Gender]
+	u.Preference = SupportedGender[req.Preference]
+	u.Age = req.Age
+	u.Photos = req.Photos
 }
 
 func (u *User) IsPasswordCorrect(req User) bool {

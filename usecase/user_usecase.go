@@ -18,11 +18,14 @@ func NewUserUsecase(u model.UserRepository) model.UserUsecase {
 }
 
 // Register :nodoc:
-func (u *userUsecase) Register(user model.User) (model.User, error) {
+func (u *userUsecase) Register(req model.RegisterUser) (model.User, error) {
 	logger := logrus.WithFields(logrus.Fields{
-		"user": utils.Dump(user),
+		"user": utils.Dump(req),
 	})
 
+	var user model.User
+
+	user.NewUserFromRequest(req)
 	if user.ID == "" {
 		user.ID = utils.GenerateID()
 	}
