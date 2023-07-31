@@ -15,6 +15,7 @@ type ReactionRepository interface {
 	CreateMatched(reaction Reaction, matched Reaction) error
 	FindMatch(userBy, userTo string) (Reaction, error)
 	FindAllSwiped(userBy string) ([]string, error)
+	FindTotalSwipeToday(userBy string) (int64, error)
 }
 
 // ReactionUsecase :nodoc:

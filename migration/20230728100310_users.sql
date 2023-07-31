@@ -8,7 +8,7 @@
     gender INT,
     preference INT,
     age INT,
-    is_premium TEXT,
+    is_premium boolean,
 
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP NOT NULL DEFAULT NOW(),

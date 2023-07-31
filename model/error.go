@@ -15,9 +15,6 @@ var (
 	// ErrUnauthorized :nodoc:
 	ErrUnauthorized = errors.New("unauthorized")
 
-	// ErrIncorrectRole :nodoc:
-	ErrIncorrectRole = errors.New("incorrect role")
-
-	// ErrInsufficientStock :nodoc:
-	ErrInsufficientStock = errors.New("insufficient stock")
+	// MaxTotalReached :nodoc:
+	MaxTotalReached = errors.New("maximum total swipe reached")
 )

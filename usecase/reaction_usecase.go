@@ -12,13 +12,15 @@ import (
 type reactionUsecase struct {
 	reactionRepo     model.ReactionRepository
 	notificationRepo model.NotificationRepository
+	userRepo         model.UserRepository
 }
 
 // NewReactionUsecase :nodoc:
-func NewReactionUsecase(r model.ReactionRepository, n model.NotificationRepository) model.ReactionUsecase {
+func NewReactionUsecase(r model.ReactionRepository, n model.NotificationRepository, u model.UserRepository) model.ReactionUsecase {
 	return &reactionUsecase{
 		reactionRepo:     r,
 		notificationRepo: n,
+		userRepo:         u,
 	}
 }
 
@@ -27,6 +29,27 @@ func (u *reactionUsecase) Create(req model.ReactionRequest) (model.Reaction, err
 	logger := logrus.WithFields(logrus.Fields{
 		"req": utils.Dump(req),
 	})
+
+	var user model.User
+
+	err := u.userRepo.FindByID(req.UserBy, &user)
+	if err != nil {
+		logger.Error(err.Error())
+		return model.Reaction{}, err
+	}
+
+	// limit 10 swipe when user is not premium
+	if !user.IsPremium {
+		total, err := u.reactionRepo.FindTotalSwipeToday(req.UserBy)
+		if err != nil {
+			logger.Error(err.Error())
+			return model.Reaction{}, err
+		}
+
+		if total >= 10 {
+			return model.Reaction{}, model.MaxTotalReached
+		}
+	}
 
 	reaction := model.NewReaction(req)
 	if reaction.ID == "" {

@@ -37,6 +37,7 @@ func (r *reactionRepository) Create(reaction model.Reaction) error {
 		return err
 	}
 
+	// cache reaction data
 	cacheKey := r.newReactionCacheKey(reaction.UserBy, reaction.UserTo)
 
 	cacheItem := cacher.NewItemWithTTL(cacheKey, reaction, 24*time.Hour)
@@ -132,6 +133,25 @@ func (r *reactionRepository) FindAllSwiped(userBy string) ([]string, error) {
 	}
 
 	return res, nil
+}
+
+// FindTotalSwipeToday :nodoc:
+func (r *reactionRepository) FindTotalSwipeToday(userBy string) (int64, error) {
+	logger := logrus.WithFields(logrus.Fields{
+		"user_by": userBy,
+	})
+
+	var total int64
+
+	qb := r.db.Table("reactions").Select("COUNT(*) as total")
+
+	err := qb.Where("user_by = ?", userBy).Where(`CAST(created_at AS DATE) = CAST("2023-07-31" AS DATE)`).Scan(&total).Error
+	if err != nil {
+		logger.Error(err)
+		return 0, err
+	}
+
+	return total, nil
 }
 
 func (r *reactionRepository) findMatchFromCache(cacheKey string, reaction *model.Reaction) error {
