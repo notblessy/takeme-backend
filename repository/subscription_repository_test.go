@@ -63,7 +63,7 @@ func TestSubscriptionRepo_Create(t *testing.T) {
 
 	t.Run("Error", func(t *testing.T) {
 		sqlMock.ExpectBegin()
-		sqlMock.ExpectExec(regexp.QuoteMeta("INSERT INTO `subss` (`id`,`name`,`email`,`password`,`description`,`gender`,`preference`,`age`,`created_at`,`updated_at`,`deleted_at`) VALUES (?,?,?,?,?,?,?,?,?,?,?)")).
+		sqlMock.ExpectExec(regexp.QuoteMeta("INSERT INTO `subscriptions` (`user_id`,`subscription_plan_id`,`is_active`,`created_at`,`updated_at`,`deleted_at`,`id`) VALUES (?,?,?,?,?,?,?)")).
 			WithArgs(
 				subs.UserID,
 				subs.SubscriptionPlanID,

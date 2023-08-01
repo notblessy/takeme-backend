@@ -90,7 +90,7 @@ Then run `make test`.
     - As the application grows, it'll be easier adding new features or modify existing ones without widespreading negative impacts.
   - Reliable:
     - Domains are easly and independently testable.
-    - Adapting Domainn driven design & SOLID principles.
+    - Adapting Domain driven design & SOLID principles.
   - Maintainable
     - A way more organized code. Even with separated layers, still encapsulates logic business that may not affect other logic when having updates/changes.
     - Code should not depend on one developer. Readable codes will saves time and effort of developers in future.
