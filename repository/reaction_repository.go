@@ -126,7 +126,13 @@ func (r *reactionRepository) FindAllSwiped(userBy string) ([]string, error) {
 
 	var res []string
 
-	err := r.db.Table("reactions").Select("user_to").Where("user_by = ?", userBy).Scan(&res).Error
+	whereToday := fmt.Sprintf(`CAST(created_at AS DATE) = CAST("%s" AS DATE)`, time.Now().Format("2006-01-02"))
+
+	err := r.db.Table("reactions").
+		Select("user_to").
+		Where("user_by = ?", userBy).
+		Where(whereToday).
+		Scan(&res).Error
 	if err != nil {
 		logger.Error(err)
 		return []string{}, err
@@ -145,8 +151,8 @@ func (r *reactionRepository) FindTotalSwipeToday(userBy string) (int64, error) {
 
 	qb := r.db.Table("reactions").Select("COUNT(*) as total")
 
-	whereNow := fmt.Sprintf(`CAST(created_at AS DATE) = CAST("%s" AS DATE)`, time.Now().Format("2006-01-02"))
-	err := qb.Where("user_by = ?", userBy).Where(whereNow).Scan(&total).Error
+	whereToday := fmt.Sprintf(`CAST(created_at AS DATE) = CAST("%s" AS DATE)`, time.Now().Format("2006-01-02"))
+	err := qb.Where("user_by = ?", userBy).Where(whereToday).Scan(&total).Error
 	if err != nil {
 		logger.Error(err)
 		return 0, err
