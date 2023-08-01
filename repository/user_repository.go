@@ -24,11 +24,25 @@ func (u *userRepository) Create(user model.User) error {
 		"user": utils.Dump(user),
 	})
 
-	err := u.db.Table("users").Create(&user).Error
+	tx := u.db.Begin()
+
+	err := tx.Table("users").Create(&user).Error
 	if err != nil {
+		tx.Rollback()
 		logger.Error(err)
 		return err
 	}
+
+	defaultSub := model.NewDefaultSubscription(user.ID)
+
+	err = tx.Create(&defaultSub).Error
+	if err != nil {
+		tx.Rollback()
+		logger.Error(err)
+		return err
+	}
+
+	tx.Commit()
 
 	return err
 }

@@ -12,15 +12,15 @@ import (
 type reactionUsecase struct {
 	reactionRepo     model.ReactionRepository
 	notificationRepo model.NotificationRepository
-	userRepo         model.UserRepository
+	subscriptionRepo model.SubscriptionRepository
 }
 
 // NewReactionUsecase :nodoc:
-func NewReactionUsecase(r model.ReactionRepository, n model.NotificationRepository, u model.UserRepository) model.ReactionUsecase {
+func NewReactionUsecase(r model.ReactionRepository, n model.NotificationRepository, s model.SubscriptionRepository) model.ReactionUsecase {
 	return &reactionUsecase{
 		reactionRepo:     r,
 		notificationRepo: n,
-		userRepo:         u,
+		subscriptionRepo: s,
 	}
 }
 
@@ -30,16 +30,16 @@ func (u *reactionUsecase) Create(req model.ReactionRequest) (model.Reaction, err
 		"req": utils.Dump(req),
 	})
 
-	var user model.User
+	var subscription model.Subscription
 
-	err := u.userRepo.FindByID(req.UserBy, &user)
+	err := u.subscriptionRepo.FindByID(req.UserBy, &subscription)
 	if err != nil {
 		logger.Error(err.Error())
 		return model.Reaction{}, err
 	}
 
 	// limit 10 swipe when user is not premium
-	if !user.IsPremium {
+	if subscription.IsFree() {
 		total, err := u.reactionRepo.FindTotalSwipeToday(req.UserBy)
 		if err != nil {
 			logger.Error(err.Error())
