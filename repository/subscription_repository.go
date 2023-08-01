@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"time"
+
 	"github.com/notblessy/takeme-backend/model"
 	"github.com/notblessy/takeme-backend/utils"
 	"github.com/sirupsen/logrus"
@@ -20,14 +22,30 @@ func NewSubscriptionRepository(d *gorm.DB) model.SubscriptionRepository {
 
 // Create :nodoc:
 func (u *subscriptionRepository) Create(subscription *model.Subscription) error {
-	err := u.db.Create(subscription).Error
+	logger := logrus.WithFields(logrus.Fields{
+		"subscription": utils.Dump(subscription),
+	})
+
+	tx := u.db.Begin()
+
+	err := tx.Table("subscriptions").Where("user_id = ?", subscription.UserID).Updates(map[string]interface{}{
+		"is_active":  false,
+		"deleted_at": time.Now(),
+	}).Error
 	if err != nil {
-		logrus.WithFields(logrus.Fields{
-			"subscription": utils.Dump(subscription),
-		}).Error(err)
+		tx.Rollback()
+		logger.Error(err)
 		return err
 	}
 
+	err = tx.Create(subscription).Error
+	if err != nil {
+		tx.Rollback()
+		logger.Error(err)
+		return err
+	}
+
+	tx.Commit()
 	return err
 }
 

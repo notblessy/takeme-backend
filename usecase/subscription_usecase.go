@@ -23,6 +23,8 @@ func (u *subscriptionUsecase) Create(subscription model.Subscription) (model.Sub
 		"subscription": utils.Dump(subscription),
 	})
 
+	subscription.IsActive = true
+
 	err := u.subscriptionRepo.Create(&subscription)
 	if err != nil {
 		logger.Error(err.Error())
