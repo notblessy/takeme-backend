@@ -26,6 +26,18 @@ func (u *userUsecase) Register(req model.RegisterUser) (model.User, error) {
 		"user": utils.Dump(req),
 	})
 
+	existUser, err := u.userRepo.FindByEmail(req.Email)
+	if err != nil {
+		logger.Error(err.Error())
+		return model.User{}, err
+	}
+
+	// validate if exist
+	if existUser.IsEmailExists(req.Email) {
+		logger.Error(model.ErrEmailAlreadyRegistered.Error())
+		return model.User{}, model.ErrEmailAlreadyRegistered
+	}
+
 	var user model.User
 
 	user.NewUserFromRequest(req)
@@ -37,7 +49,7 @@ func (u *userUsecase) Register(req model.RegisterUser) (model.User, error) {
 		user.NewUserPhotos(req.Photos)
 	}
 
-	err := u.userRepo.Create(user)
+	err = u.userRepo.Create(user)
 	if err != nil {
 		logger.Error(err.Error())
 		return model.User{}, err

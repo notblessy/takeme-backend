@@ -117,11 +117,12 @@ func (u *User) NewUserPhotos(photos []string) {
 
 // IsPasswordCorrect :nodoc:
 func (u *User) IsPasswordCorrect(req User) bool {
-	if u.Email == req.Email && u.Password == req.Password {
-		return true
-	}
+	return u.Email == req.Email && u.Password == req.Password
+}
 
-	return false
+// IsEmailExists :nodoc:
+func (u *User) IsEmailExists(email string) bool {
+	return u.Email == email
 }
 
 // ToResponse :nodoc:

@@ -17,4 +17,7 @@ var (
 
 	// ErrMaxTotalReached :nodoc:
 	ErrMaxTotalReached = errors.New("maximum total swipe reached")
+
+	// ErrEmailAlreadyRegistered :nodoc:
+	ErrEmailAlreadyRegistered = errors.New("email already registered")
 )
