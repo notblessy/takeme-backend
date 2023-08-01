@@ -19,3 +19,17 @@ migration:
 
 check-modd-exists:
 	@modd --version > /dev/null
+
+model/mock/mock_user_repository.go:
+	mockgen -destination=model/mock/mock_user_repository.go -package=mock github.com/notblessy/takeme-backend/model UserRepository
+
+model/mock/mock_user_usecase.go:
+	mockgen -destination=model/mock/mock_user_usecase.go -package=mock github.com/notblessy/takeme-backend/model UserUsecase
+
+mockgen: model/mock/mock_user_repository.go \
+	model/mock/mock_user_usecase.go
+
+unit-test: mockgen
+	go test ./... -v --cover
+
+test: unit-test

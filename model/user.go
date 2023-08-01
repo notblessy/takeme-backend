@@ -42,7 +42,6 @@ type User struct {
 	Gender      int        `json:"gender"`
 	Preference  int        `json:"preference"`
 	Age         int        `json:"age"`
-	IsPremium   bool       `json:"is_premium"`
 	Photos      []Photo    `json:"photos"`
 	CreatedAt   time.Time  `gorm:"<-:create" json:"created_at"`
 	UpdatedAt   *time.Time `json:"updated_at"`
@@ -127,7 +126,6 @@ func (u *User) ToResponse() UserResponse {
 		Gender:      GenderMapper[u.Gender],
 		Preference:  GenderMapper[u.Preference],
 		Age:         u.Age,
-		IsPremium:   u.IsPremium,
 		Photos:      u.Photos,
 		CreatedAt:   u.CreatedAt,
 		UpdatedAt:   u.UpdatedAt,
