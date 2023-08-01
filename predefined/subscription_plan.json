@@ -1,0 +1,20 @@
+[
+  {
+    "id": 1,
+    "name": "FREE",
+    "price": 0,
+    "feature": {
+      "swipe_limit": 10,
+      "verified_badge": false
+    }
+  },
+  {
+    "id": 2,
+    "name": "PREMIUM",
+    "price": 60000,
+    "feature": {
+      "swipe_limit": 999,
+      "verified_badge": false
+    }
+  }
+]

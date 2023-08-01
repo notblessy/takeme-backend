@@ -20,7 +20,7 @@ func NewNotificationRepository(d *gorm.DB) model.NotificationRepository {
 
 // Create :nodoc:
 func (u *notificationRepository) Create(notification model.Notification) error {
-	err := u.db.Create(notification).Error
+	err := u.db.Create(&notification).Error
 	if err != nil {
 		logrus.WithFields(logrus.Fields{
 			"notification": utils.Dump(notification),

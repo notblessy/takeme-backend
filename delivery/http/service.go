@@ -10,8 +10,9 @@ import (
 
 // HTTPService :nodoc:
 type HTTPService struct {
-	userUsecase     model.UserUsecase
-	reactionUsecase model.ReactionUsecase
+	userUsecase         model.UserUsecase
+	reactionUsecase     model.ReactionUsecase
+	subscriptionUsecase model.SubscriptionUsecase
 }
 
 // NewHTTPService :nodoc:
@@ -27,6 +28,11 @@ func (h *HTTPService) RegisterUserUsecase(u model.UserUsecase) {
 // RegisterReactionUsecase :nodoc:
 func (h *HTTPService) RegisterReactionUsecase(r model.ReactionUsecase) {
 	h.reactionUsecase = r
+}
+
+// RegisterSubscriptionUsecase :nodoc:
+func (h *HTTPService) RegisterSubscriptionUsecase(s model.SubscriptionUsecase) {
+	h.subscriptionUsecase = s
 }
 
 // Routes :nodoc:
@@ -49,5 +55,8 @@ func (h *HTTPService) Routes(route *echo.Echo) {
 
 	users := routes.Group("/users")
 	users.GET("", h.findAllUserHandler)
+
+	subscriptions := routes.Group("/subscriptions")
+	subscriptions.POST("", h.createSubscriptionHandler)
 
 }
