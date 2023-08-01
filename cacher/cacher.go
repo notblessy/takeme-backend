@@ -1,3 +1,4 @@
+// Package cacher implements caching with redis
 package cacher
 
 import (
@@ -9,8 +10,10 @@ import (
 
 const defaultTTL = 24 * time.Hour
 
+// ErrKeyNotExist :nodoc:
 var ErrKeyNotExist = errors.New("key not exist")
 
+// Cacher :nodoc:
 type Cacher interface {
 	Get(key string) (interface{}, error)
 	Store(item Item) error

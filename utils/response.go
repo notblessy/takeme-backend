@@ -4,6 +4,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+// DefaultMessage :nodoc:
 const DefaultMessage string = "success"
 
 // HTTPResponse :nodoc:

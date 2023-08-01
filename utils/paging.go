@@ -54,6 +54,7 @@ func WithPaging(result interface{}, total int64, pageRequest, sizeRequest string
 	}
 }
 
+// GetPageAndSize :nodoc:
 func GetPageAndSize(q map[string]string) (offset, size int) {
 	logger := logrus.WithField("queries", Dump(q))
 	if q == nil {

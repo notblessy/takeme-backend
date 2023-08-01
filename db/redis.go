@@ -6,6 +6,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+// RedisConnectionPool :nodoc:
 func RedisConnectionPool() *redis.Pool {
 	pool := &redis.Pool{
 		MaxIdle:   80,

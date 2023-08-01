@@ -7,10 +7,12 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+// CustomValidator :nodoc:
 type CustomValidator struct {
 	Validator *validator.Validate
 }
 
+// Validate :nodoc:
 func (cv *CustomValidator) Validate(i interface{}) error {
 	if err := cv.Validator.Struct(i); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())

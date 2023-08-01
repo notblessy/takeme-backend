@@ -29,7 +29,13 @@ model/mock/mock_user_usecase.go:
 mockgen: model/mock/mock_user_repository.go \
 	model/mock/mock_user_usecase.go
 
+check-cognitive-complexity:
+	find . -type f -name '*.go' -not -name "*.pb.go" -not -name "mock*.go" -exec gocognit -over 15 {} +
+
+lint: check-cognitive-complexity
+	golangci-lint run --print-issued-lines=false --exclude-use-default=false --enable=goimports  --enable=unconvert --enable=unparam --disable=deadcode --fix --timeout=10m
+
 unit-test: mockgen
 	go test ./... -v --cover
 
-test: unit-test
+test: lint unit-test

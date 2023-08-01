@@ -4,12 +4,14 @@ import (
 	"time"
 )
 
+// SupportedGender :nodoc:
 var SupportedGender = map[string]int{
 	"MALE":   1,
 	"FEMALE": 2,
 	"BOTH":   3,
 }
 
+// GenderMapper :nodoc:
 var GenderMapper = map[int]string{
 	1: "MALE",
 	2: "FEMALE",
@@ -48,6 +50,7 @@ type User struct {
 	DeletedAt   *time.Time `json:"deleted_at,omitempty"`
 }
 
+// RegisterUser :nodoc:
 type RegisterUser struct {
 	ID          string   `json:"id"`
 	Name        string   `json:"name"`
@@ -72,6 +75,7 @@ type Auth struct {
 	Token string `json:"token"`
 }
 
+// UserResponse :nodoc:
 type UserResponse struct {
 	ID          string     `json:"id"`
 	Name        string     `json:"name"`
@@ -88,6 +92,7 @@ type UserResponse struct {
 	DeletedAt   *time.Time `json:"deleted_at,omitempty"`
 }
 
+// NewUserFromRequest :nodoc:
 func (u *User) NewUserFromRequest(req RegisterUser) {
 	u.Name = req.Name
 	u.Description = req.Description
@@ -98,17 +103,19 @@ func (u *User) NewUserFromRequest(req RegisterUser) {
 	u.Age = req.Age
 }
 
+// NewUserPhotos :nodoc:
 func (u *User) NewUserPhotos(photos []string) {
 	for _, url := range photos {
 		p := Photo{
 			UserID: u.ID,
-			Url:    url,
+			URL:    url,
 		}
 
 		u.Photos = append(u.Photos, p)
 	}
 }
 
+// IsPasswordCorrect :nodoc:
 func (u *User) IsPasswordCorrect(req User) bool {
 	if u.Email == req.Email && u.Password == req.Password {
 		return true
@@ -117,6 +124,7 @@ func (u *User) IsPasswordCorrect(req User) bool {
 	return false
 }
 
+// ToResponse :nodoc:
 func (u *User) ToResponse() UserResponse {
 	return UserResponse{
 		ID:          u.ID,

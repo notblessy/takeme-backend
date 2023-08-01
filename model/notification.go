@@ -18,6 +18,7 @@ type Notification struct {
 	DeletedAt *time.Time `json:"deleted_at,omitempty"`
 }
 
+// MatchMessage :nodoc:
 type MatchMessage struct {
 	Type    string `json:"type"`
 	UserID  string `json:"user_id"`

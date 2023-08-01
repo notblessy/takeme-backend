@@ -51,6 +51,7 @@ func NewReaction(request ReactionRequest) Reaction {
 	}
 }
 
+// IsMatch :nodoc:
 func (r *Reaction) IsMatch() bool {
 	return r.ID != ""
 }

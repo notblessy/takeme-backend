@@ -47,7 +47,7 @@ func (u *reactionUsecase) Create(req model.ReactionRequest) (model.Reaction, err
 		}
 
 		if total >= 10 {
-			return model.Reaction{}, model.MaxTotalReached
+			return model.Reaction{}, model.ErrMaxTotalReached
 		}
 	}
 

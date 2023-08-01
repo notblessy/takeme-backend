@@ -51,6 +51,7 @@ type Feature struct {
 	VerifiedBadge bool `json:"verified_badge"`
 }
 
+// NewDefaultSubscription :nodoc:
 func NewDefaultSubscription(userID string) Subscription {
 	return Subscription{
 		UserID:             userID,
@@ -59,6 +60,7 @@ func NewDefaultSubscription(userID string) Subscription {
 	}
 }
 
+// IsFree :nodoc:
 func (s *Subscription) IsFree() bool {
 	return s.SubscriptionPlan.Name == "FREE" || s.ID == 0
 }

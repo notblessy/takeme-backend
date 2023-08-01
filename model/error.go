@@ -15,6 +15,6 @@ var (
 	// ErrUnauthorized :nodoc:
 	ErrUnauthorized = errors.New("unauthorized")
 
-	// MaxTotalReached :nodoc:
-	MaxTotalReached = errors.New("maximum total swipe reached")
+	// ErrMaxTotalReached :nodoc:
+	ErrMaxTotalReached = errors.New("maximum total swipe reached")
 )

@@ -80,10 +80,12 @@ func JwtSecret() string {
 	return viper.GetString("jwt_secret")
 }
 
+// RedisHost :nodoc:
 func RedisHost() string {
 	return viper.GetString("redis_host")
 }
 
+// RedisDB :nodoc:
 func RedisDB() int {
 	return viper.GetInt("redis_db")
 }
