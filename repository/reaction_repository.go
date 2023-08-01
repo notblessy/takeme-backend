@@ -145,7 +145,8 @@ func (r *reactionRepository) FindTotalSwipeToday(userBy string) (int64, error) {
 
 	qb := r.db.Table("reactions").Select("COUNT(*) as total")
 
-	err := qb.Where("user_by = ?", userBy).Where(`CAST(created_at AS DATE) = CAST("2023-07-31" AS DATE)`).Scan(&total).Error
+	whereNow := fmt.Sprintf(`CAST(created_at AS DATE) = CAST("%s" AS DATE)`, time.Now().Format("2006-01-02"))
+	err := qb.Where("user_by = ?", userBy).Where(whereNow).Scan(&total).Error
 	if err != nil {
 		logger.Error(err)
 		return 0, err

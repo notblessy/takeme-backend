@@ -37,7 +37,10 @@ func (u *subscriptionRepository) FindByID(userID string, subscription *model.Sub
 		"user_id": userID,
 	})
 
-	err := u.db.Where("user_id = ?", userID).Where("is_active = ?", true).First(subscription).Error
+	err := u.db.Joins("SubscriptionPlan").
+		Where("subscriptions.user_id = ?", userID).
+		Where("subscriptions.is_active = ?", true).
+		First(subscription).Error
 	if err != nil {
 		logger.Error(err)
 		return err
