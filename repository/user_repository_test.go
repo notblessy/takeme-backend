@@ -123,14 +123,14 @@ func TestUserRepo_Login(t *testing.T) {
 	})
 }
 
-// TestProductRepo_FindByEmail :nodoc:
-func TestProductRepo_FindByEmail(t *testing.T) {
+// TestUserRepo_FindByEmail :nodoc:
+func TestUserRepo_FindByEmail(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
 	dbMock, sqlMock := newMysqlMock()
 
-	pr := userRepo{
+	ur := userRepo{
 		db: dbMock,
 	}
 
@@ -161,18 +161,18 @@ func TestProductRepo_FindByEmail(t *testing.T) {
 		sqlMock.ExpectQuery(regexp.QuoteMeta("SELECT * FROM `users`")).
 			WillReturnRows(rows)
 
-		err := pr.db.Find(&[]model.User{}).Error
+		err := ur.db.Find(&[]model.User{}).Error
 		assert.NoError(t, err)
 	})
 
-	t.Run("Success", func(t *testing.T) {
+	t.Run("Error", func(t *testing.T) {
 		sqlMock.ExpectBegin()
 
 		dbMock.Begin()
 		sqlMock.ExpectQuery(regexp.QuoteMeta("SELECT * FROM `users`")).
 			WillReturnError(gorm.ErrRecordNotFound)
 
-		err := pr.db.Find(&[]model.User{}).Error
+		err := ur.db.Find(&[]model.User{}).Error
 		assert.Error(t, err)
 	})
 }
