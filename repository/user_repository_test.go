@@ -121,5 +121,58 @@ func TestUserRepo_Login(t *testing.T) {
 		err := ur.db.Create(user).Error
 		assert.Error(t, err)
 	})
+}
 
+// TestProductRepo_FindByEmail :nodoc:
+func TestProductRepo_FindByEmail(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	dbMock, sqlMock := newMysqlMock()
+
+	pr := userRepo{
+		db: dbMock,
+	}
+
+	userID := utils.GenerateID()
+	now := time.Now()
+
+	user := &model.User{
+		ID:          userID,
+		Name:        "Frederich Blessy",
+		Email:       "frederichblessy@gmail.com",
+		Password:    "asdzxc",
+		Description: "Its me",
+		Gender:      1,
+		Preference:  2,
+		Age:         26,
+		CreatedAt:   now,
+		UpdatedAt:   &now,
+		DeletedAt:   nil,
+	}
+
+	t.Run("Success", func(t *testing.T) {
+		sqlMock.ExpectBegin()
+
+		dbMock.Begin()
+		rows := sqlmock.NewRows(userColumns).
+			AddRow(user.ID, user.Name, user.Email, user.Password, user.Description, user.Gender, user.Preference, user.Age, user.CreatedAt, user.UpdatedAt, user.DeletedAt)
+
+		sqlMock.ExpectQuery(regexp.QuoteMeta("SELECT * FROM `users`")).
+			WillReturnRows(rows)
+
+		err := pr.db.Find(&[]model.User{}).Error
+		assert.NoError(t, err)
+	})
+
+	t.Run("Success", func(t *testing.T) {
+		sqlMock.ExpectBegin()
+
+		dbMock.Begin()
+		sqlMock.ExpectQuery(regexp.QuoteMeta("SELECT * FROM `users`")).
+			WillReturnError(gorm.ErrRecordNotFound)
+
+		err := pr.db.Find(&[]model.User{}).Error
+		assert.Error(t, err)
+	})
 }
